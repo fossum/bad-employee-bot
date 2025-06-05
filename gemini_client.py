@@ -3,8 +3,6 @@ import os
 
 import google.generativeai as genai
 
-from gemini_client import GeminiClient
-
 
 class GeminiClient:
     """A client to interact with the Google Gemini API."""
@@ -85,30 +83,30 @@ class GeminiClient:
             return f"Sorry, I encountered an error during our chat: {e}"
 
 # Example of how to use (optional, for testing this file directly):
-# if __name__ == '__main__':
-#     import asyncio
-#     # You'd typically load this from an environment variable or a config file
-#     YOUR_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-#     if not YOUR_GEMINI_API_KEY:
-#         print("Please set the GEMINI_API_KEY environment variable.")
-#     else:
-#         gemini_bot = GeminiClient(api_key=YOUR_GEMINI_API_KEY)
-#
-#         async def main():
-#             # Test single response
-#             # prompt = "What is the speed of light?"
-#             # print(f"User: {prompt}")
-#             # response = await gemini_bot.generate_response(prompt)
-#             # print(f"Gemini: {response}")
-#
-#             # Test chat
-#             await gemini_bot.start_chat()
-#             print("Gemini Chat Started. Type 'quit' to end.")
-#             while True:
-#                 user_input = input("You: ")
-#                 if user_input.lower() == 'quit':
-#                     break
-#                 gemini_response = await gemini_bot.send_chat_message(user_input)
-#                 print(f"Gemini: {gemini_response}")
-#
-#         asyncio.run(main())
+if __name__ == '__main__':
+    import asyncio
+    # You'd typically load this from an environment variable or a config file
+    YOUR_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    if not YOUR_GEMINI_API_KEY:
+        print("Please set the GEMINI_API_KEY environment variable.")
+    else:
+        gemini_bot = GeminiClient(api_key=YOUR_GEMINI_API_KEY)
+
+        async def main():
+            # Test single response
+            # prompt = "What is the speed of light?"
+            # print(f"User: {prompt}")
+            # response = await gemini_bot.generate_response(prompt)
+            # print(f"Gemini: {response}")
+
+            # Test chat
+            await gemini_bot.start_chat()
+            print("Gemini Chat Started. Type 'quit' to end.")
+            while True:
+                user_input = input("You: ")
+                if user_input.lower().strip() == 'quit':
+                    break
+                gemini_response = await gemini_bot.send_chat_message(user_input)
+                print(f"Gemini: {gemini_response}")
+
+        asyncio.run(main())

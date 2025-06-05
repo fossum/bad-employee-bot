@@ -57,28 +57,29 @@ async def on_ready():
 # for your commands to continue working.
 @bot.event
 async def on_message(message):
-    """
-    This function is called for EVERY message the bot can see.
+    """This function is called for EVERY message the bot can see.
+
     Be careful with what you do here, as it can run very often.
     """
     # Ignore messages sent by the bot itself to prevent loops
     if message.author == bot.user:
         return
+    # Log messages to console.
+    logging.info(f"{message.guild.name}:{message.channel.name}:{message.author.global_name}:Msg: {message.clean_content}")
 
-    # Example: Log messages to console
-    logging.info(f"{message.guild.name}:{message.channel.name}:{message.author.global_name}:Msg: {message.content}")
+    # Save channel's message into database for context.
 
+    # Determine if the message is worthy of a response.
     if "perl" in message.content.lower():
         await message.channel.send("I heard Python! I like Python.")
 
-    # IMPORTANT: This line allows the bot to process commands.
-    # If you have an on_message event, you NEED this line for commands to work.
+    # This line allows the bot to process commands.
     await bot.process_commands(message)
 
 if __name__ == "__main__":
-    token = os.getenv('APP_TOKEN')
+    token = os.getenv('DISCORD_APP_TOKEN')
     if not token:
-        raise ValueError("Please set the APP_TOKEN environment variable.")
+        raise ValueError("Please set the DISCORD_APP_TOKEN environment variable.")
     try:
         bot.run(token)
     except discord.errors.LoginFailure:
