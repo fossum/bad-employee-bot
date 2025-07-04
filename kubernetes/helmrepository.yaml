@@ -6,4 +6,4 @@ metadata:
 spec:
   interval: 15m
   # This URL corresponds to the GitHub Pages URL for your repository.
-  url: https://fossum.github.io/bad-employee-bot
+  url: https://fossum.github.io/bad-employee-bot/
