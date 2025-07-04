@@ -40,6 +40,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          tags: |
+            # Create 'latest' tag for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Create a tag for the branch name (e.g., main)
+            type=ref,event=branch
+            # Create a tag for the git commit SHA
+            type=sha
 
       # Step 5: Build and push the Docker image
       # This step builds the image and pushes it to GHCR.
