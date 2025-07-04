@@ -1,0 +1,31 @@
+name: Publish Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    # Grant permissions to the workflow to push to the gh-pages branch.
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # The chart-releaser-action requires the full git history.
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: chart # This should be the directory where your chart is located.
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

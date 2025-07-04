@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: bad-employee-bot-chart
+  namespace: flux-system
+spec:
+  interval: 15m
+  # This URL corresponds to the GitHub Pages URL for your repository.
+  url: https://fossum.github.io/bad-employee-bot
