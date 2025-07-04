@@ -46,8 +46,8 @@ class GeminiClient:
             return f"Sorry, I encountered an error while trying to talk to Gemini: {e}"
 
     async def start_chat(self, history=None):
-        """
-        Starts a new chat session or continues from existing history.
+        """Starts a new chat session or continues from existing history.
+
         Args:
             history (list, optional): A list of previous chat messages
                                       following the Gemini API's format.
@@ -58,8 +58,8 @@ class GeminiClient:
         print("Gemini chat session started.")
 
     async def send_chat_message(self, message: str) -> str:
-        """
-        Sends a message in an ongoing chat session and gets a response.
+        """Sends a message in an ongoing chat session and gets a response.
+
         Args:
             message (str): The user's message to send to the chat.
         Returns:

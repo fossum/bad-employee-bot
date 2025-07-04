@@ -1,4 +1,4 @@
-# This example requires the 'message_content' intent.
+"""Discord Bad Employee Bot with Gemini AI responses."""
 
 import logging
 import os
@@ -6,10 +6,14 @@ import os
 import discord
 from discord.ext import commands
 
+from gemini_client import GeminiClient
+
 logging.basicConfig(level=logging.INFO)
 
 os.environ['PYTHONASYNCIODEBUG'] = '1'  # Enable asyncio debug mode
 COMMAND_PREFIX = "!"
+
+ai_client = GeminiClient(api_key=os.getenv('GEMINI_API_KEY'))
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,18 +28,24 @@ async def hello(ctx):
 
 @bot.command(name='ping', help='Shows the bot\'s latency.')
 async def ping(ctx):
-    """
+    """Calculates and sends the bot's latency.
+
     Command: !ping
-    Calculates and sends the bot's latency.
     """
     latency = bot.latency * 1000  # Latency in milliseconds
     await ctx.send(f'Pong! Latency: {latency:.2f}ms')
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Invalid command. Try `!help` to see available commands.")
-    elif isinstance(error, commands.MissingRequiredArgument):
+    """Error handler for commands.
+
+    Args:
+        ctx (_type_): Discord client context.
+        error (_type_): Error raised by the command.
+    """
+    # if isinstance(error, commands.CommandNotFound):
+    #     await ctx.send("Invalid command. Try `!help` to see available commands.")
+    if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("You are missing a required argument for this command.")
     elif isinstance(error, commands.CommandInvokeError):
         print(f"Error in command {ctx.command}: {error.original}")
@@ -71,7 +81,12 @@ async def on_message(message):
 
     # Determine if the message is worthy of a response.
     if "perl" in message.content.lower():
-        await message.channel.send("I heard Python! I like Python.")
+        ai_response = await ai_client.generate_response(
+            f"""
+            Write a snarky response to the following message:
+            {message.clean_content}
+            """)
+        await message.channel.send(ai_response)
 
     # This line allows the bot to process commands.
     await bot.process_commands(message)
