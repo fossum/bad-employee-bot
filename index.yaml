@@ -3,6 +3,16 @@ entries:
   bad-employee-bot:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-07-04T23:10:40.648961177Z"
+    description: A Helm chart for the Bad Employee Discord Bot.
+    digest: 0fa9f7a3c9b67b1008cc25ceea0f4054ae8d2314e9de002ee43c6f333706dff4
+    name: bad-employee-bot
+    type: application
+    urls:
+    - https://github.com/fossum/bad-employee-bot/releases/download/bad-employee-bot-0.1.2/bad-employee-bot-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-07-04T22:30:41.592972753Z"
     description: A Helm chart for the Bad Employee Discord Bot.
     digest: d6744426dee75310f31446c56e470889a3faf2a5fb59b395ad1c97aa517fb54a
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/fossum/bad-employee-bot/releases/download/bad-employee-bot-0.1.1/bad-employee-bot-0.1.1.tgz
     version: 0.1.1
-generated: "2025-07-04T22:30:41.592978744Z"
+generated: "2025-07-04T23:10:40.648968611Z"
