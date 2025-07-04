@@ -10,6 +10,8 @@ jobs:
     # Grant permissions to the workflow to push to the gh-pages branch.
     permissions:
       contents: write
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
