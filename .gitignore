@@ -1,2 +1,8 @@
 .env
+
+# Local Python files
 **/*.pyc
+.venv/
+
+# Helm chart dependency archives
+charts/*/charts/

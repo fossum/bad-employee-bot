@@ -28,12 +28,16 @@ secrets:
   # -- GEMINI_API_KEY: Your Gemini API key.
   GEMINI_API_KEY: ""
 
-serviceAccount:
-  create: true
-  annotations: {}
-  name: ""
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    cpu: 1000m
+    memory: 500Mi
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+cnpg:
+  main:
+    enabled: true
+    user: employee
+    database: bad_employee
