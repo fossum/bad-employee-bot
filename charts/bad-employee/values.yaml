@@ -1,32 +1,14 @@
-# Default values for bad-employee-bot.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 1
-
 image:
   repository: ghcr.io/fossum/bad-employee-bot
   pullPolicy: IfNotPresent
   # The tag is intentionally left blank. It will be provided by the HelmRelease.
   # This allows FluxCD's image automation to update it.
-  tag: ""
+  tag: "latest"
 
 nameOverride: ""
 fullnameOverride: ""
-
-# -- The name of an existing Kubernetes secret that contains the required environment variables.
-# If you don't specify this, a new secret will be created using the `secrets` values below,
-# which is not recommended for production.
 existingSecret: ""
-
-# -- Environment variables to be created in a new Kubernetes secret.
-# It is highly recommended to manage this secret outside the chart, for example
-# with SOPS, External Secrets Operator, or by creating it manually.
-secrets:
-  # -- DISCORD_APP_TOKEN: Your Discord bot token.
-  DISCORD_APP_TOKEN: ""
-  # -- GEMINI_API_KEY: Your Gemini API key.
-  GEMINI_API_KEY: ""
+replicaCount: 1
 
 resources:
   requests:
@@ -41,3 +23,30 @@ cnpg:
     enabled: true
     user: employee
     database: bad_employee
+    cluster:
+      storage:
+        size: 10Gi
+      walStorage:
+        size: 10Gi
+
+service:
+  main:
+    enabled: false
+    main:
+      enabled: false
+
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+            DISCORD_APP_TOKEN: ""
+            GEMINI_API_KEY: ""

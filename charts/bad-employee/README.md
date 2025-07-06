@@ -24,4 +24,4 @@
 
 ### Installing the development version
 
-1. `helm upgrade --install bad-employee-bot charts/bad-employee --set secrets.DISCORD_APP_TOKEN="YOUR_DISCORD_APP_TOKEN" --set secrets.GEMINI_API_KEY="YOUR_GEMINI_API_KEY"`
+1. `helm upgrade --install bad-employee-bot charts/bad-employee --set workload.main.podSpec.containers.main.env.DISCORD_APP_TOKEN="YOUR_DISCORD_APP_TOKEN" --set workload.main.podSpec.containers.main.env.GEMINI_API_KEY="YOUR_GEMINI_API_KEY" --set global.fallbackDefaults.storageClass=longhorn`

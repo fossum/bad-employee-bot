@@ -10,4 +10,4 @@
     1. https://discord.com/developers/applications
     1. Click on the Bot tab.
     1. Reset the token and save the value somewhere safe. Or just copy it to the next step.
-1. Set the DISCORD_API_KEY environment variable.
+1. Set the DISCORD_APP_TOKEN environment variable.
