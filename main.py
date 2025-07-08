@@ -6,9 +6,22 @@ import os
 import discord
 from discord.ext import commands
 
+from chat_history import ChatHelper, PSQLParams
 from gemini_client import GeminiClient
 
 logging.basicConfig(level=logging.INFO)
+
+# --- DevContainer Usage ---
+db_connection_params = PSQLParams(
+    dbname="bad_employee",
+    user="employee",
+    password="password",
+    host="db",
+    port="5432"
+)
+
+with ChatHelper(db_connection_params) as chat_helper:
+    chat_helper.verify_table()
 
 os.environ['PYTHONASYNCIODEBUG'] = '1'  # Enable asyncio debug mode
 COMMAND_PREFIX = "!"
@@ -74,22 +87,22 @@ async def on_message(message):
     # Ignore messages sent by the bot itself to prevent loops
     if message.author == bot.user:
         return
+
     # Log messages to console.
     logging.info(f"{message.guild.name}:{message.channel.name}:{message.author.global_name}:Msg: {message.clean_content}")
+    with ChatHelper(db_connection_params) as chat_helper:
+        chat_helper.save_chat_message(message)
 
-    # Save channel's message into database for context.
-
-    # Determine if the message is worthy of a response.
-    if "perl" in message.content.lower():
-        ai_response = await ai_client.generate_response(
-            f"""
-            Write a snarky response to the following message:
-            {message.clean_content}
-            """)
-        await message.channel.send(ai_response)
+        # Determine if the message is worthy of a response.
+        if "perl" in message.content.lower():
+            ai_response = await ai_client.generate_response(
+                message, chat_helper.messages_from_user(message.author)
+            )
+            await message.channel.send(ai_response)
 
     # This line allows the bot to process commands.
     await bot.process_commands(message)
+
 
 if __name__ == "__main__":
     token = os.getenv('DISCORD_APP_TOKEN')

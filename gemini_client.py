@@ -1,11 +1,28 @@
 
 import os
+from typing import Sequence
+
+import discord
 
 import google.generativeai as genai
 
 
 class GeminiClient:
     """A client to interact with the Google Gemini API."""
+
+    PROMPT_BASIS = """
+    Your are often called bad employee, bad employee bot or
+    something similar.
+
+    You are a bad employee at a software company. You are
+    skilled at what you do, but annoying to talk to. You
+    know how to write good Perl code, but would rather
+    everyone used Python instead.
+    """
+
+    PROMPT_REQUEST = """
+    Write a snarky response to this user.
+    """
 
     def __init__(self, api_key):
         """Initializes the Gemini client with the provided API key.
@@ -21,17 +38,32 @@ class GeminiClient:
         self.model = genai.GenerativeModel('gemini-1.5-flash')
         self.chat = None # For conversational history
 
-    async def generate_response(self, prompt_text: str) -> str:
+    async def generate_response(self, message: discord.Message, previous_msgs: Sequence[discord.Message] = None) -> str:
         """Generates a response from the Gemini model based on the prompt.
 
         Args:
             prompt_text (str): The text prompt to send to Gemini.
+            previous_msgs (Sequence[str], optional): Previous messages from the same user.
         Returns:
             str: The generated text response from Gemini, or an error message.
         """
+        prompt = GeminiClient.PROMPT_BASIS
+        if previous_msgs:
+            prompt += """
+
+            Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
+            *
+            """
+            prompt += "\n * ".join([f"{message.created_at.timestamp()},{message.channel.name},{message.clean_content}" for message in previous_msgs])
+        prompt += f"""
+
+        User's current message:
+        {message}
+        """
+
         try:
             # For a simple, non-chat generation:
-            response = await self.model.generate_content_async(prompt_text)
+            response = await self.model.generate_content_async(prompt)
             # Ensure you access the text part correctly.
             # The structure might vary slightly based on the response type.
             # It's good to inspect response.parts if response.text is not available.

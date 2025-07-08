@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"discord.py" = "*"
 google-generativeai = "*"
+"discord.py" = "*"
+psycopg2 = "*"
 
 [dev-packages]
 pytest-asyncio = "*"
