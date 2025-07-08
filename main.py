@@ -13,11 +13,11 @@ logging.basicConfig(level=logging.INFO)
 
 # --- DevContainer Usage ---
 db_connection_params = PSQLParams(
-    dbname="bad_employee",
-    user="employee",
-    password="password",
-    host="db",
-    port="5432"
+    dbname=os.getenv('BAD_EMPLOYEE_DB'),
+    user=os.getenv('BAD_EMPLOYEE_USER'),
+    password=os.getenv('BAD_EMPLOYEE_PASS'),
+    host=os.getenv('BAD_EMPLOYEE_HOST'),
+    port=os.getenv('BAD_EMPLOYEE_PORT')
 )
 
 with ChatHelper(db_connection_params) as chat_helper:
