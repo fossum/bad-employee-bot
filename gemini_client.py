@@ -49,7 +49,9 @@ class GeminiClient:
         """
         prompt = GeminiClient.PROMPT_BASIS
         if previous_msgs:
-            prompt += """
+            prompt += f"""
+
+            This user is named @{message.author.global_name}
 
             Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
             *

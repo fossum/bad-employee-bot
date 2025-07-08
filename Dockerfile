@@ -5,6 +5,10 @@ FROM python:3.12-slim
 # Set the working directory in the container
 WORKDIR /app
 
+RUN apt update \
+  && apt install build-essential libpq-dev --no-install-recommends -y \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
 # Install pipenv, which is used to manage project dependencies
 RUN pip install pipenv
 

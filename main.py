@@ -25,6 +25,19 @@ with ChatHelper(db_connection_params) as chat_helper:
 
 os.environ['PYTHONASYNCIODEBUG'] = '1'  # Enable asyncio debug mode
 COMMAND_PREFIX = "!"
+TRIGGER_WORDS = [
+    word.lower() for word in [
+        "Perl",
+        "Python",
+        "COBAL",
+        "HTML",
+        "CSS",
+        "Unity",
+        "C#",
+        "VSCode",
+        "VS Code"
+    ]
+]
 
 ai_client = GeminiClient(api_key=os.getenv('GEMINI_API_KEY'))
 
@@ -94,7 +107,7 @@ async def on_message(message):
         chat_helper.save_chat_message(message)
 
         # Determine if the message is worthy of a response.
-        if "perl" in message.content.lower():
+        if any(word in message.content.lower() for word in TRIGGER_WORDS):
             ai_response = await ai_client.generate_response(
                 message, chat_helper.messages_from_user(message.author)
             )

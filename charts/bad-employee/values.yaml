@@ -50,9 +50,17 @@ workload:
           env:
             DISCORD_APP_TOKEN: ""
             GEMINI_API_KEY: ""
-            BAD_EMPLOYEE_DB="bad_employee"
-            BAD_EMPLOYEE_USER="employee"
-            BAD_EMPLOYEE_PASS=""
-            BAD_EMPLOYEE_HOST=""
-            BAD_EMPLOYEE_PORT="5432"
-
+            BAD_EMPLOYEE_DB: "bad_employee"
+            BAD_EMPLOYEE_USER:
+              secretKeyRef:
+                name: '{{ .Release.Name }}-cnpg-main-user'
+                key: username
+            BAD_EMPLOYEE_PASS:
+              secretKeyRef:
+                name: '{{ .Release.Name }}-cnpg-main-user'
+                key: password
+            BAD_EMPLOYEE_HOST:
+              secretKeyRef:
+                name: '{{ .Release.Name }}-cnpg-main-urls'
+                key: host
+            BAD_EMPLOYEE_PORT: "5432"
