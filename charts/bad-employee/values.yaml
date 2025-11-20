@@ -53,14 +53,14 @@ workload:
             BAD_EMPLOYEE_DB: "bad_employee"
             BAD_EMPLOYEE_USER:
               secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-main-user'
+                name: '{{ .Release.Name }}-cnpg-app'
                 key: username
             BAD_EMPLOYEE_PASS:
               secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-main-user'
+                name: '{{ .Release.Name }}-cnpg-app'
                 key: password
             BAD_EMPLOYEE_HOST:
               secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-main-urls'
+                name: '{{ .Release.Name }}-cnpg-app'
                 key: host
             BAD_EMPLOYEE_PORT: "5432"
