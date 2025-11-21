@@ -18,6 +18,24 @@ resources:
     cpu: 1000m
     memory: 500Mi
 
+rbac:
+  main:
+    enabled: true
+    primary: true
+    clusterWide: true
+    rules:
+      - apiGroups: [""]
+        resources: ["configmaps", "secrets"]
+        verbs: ["get", "watch", "list"]
+
+serviceAccount:
+  main:
+    enabled: true
+    primary: true
+
+podOptions:
+  automountServiceAccountToken: true
+
 cnpg:
   main:
     enabled: true
@@ -50,11 +68,8 @@ workload:
           env:
             DISCORD_APP_TOKEN: ""
             GEMINI_API_KEY: ""
-            BAD_EMPLOYEE_DB: "bad_employee"
-            BAD_EMPLOYEE_USER:
-              secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-app'
-                key: username
+            BAD_EMPLOYEE_DB: "{{ .Values.cnpg.main.database }}"
+            BAD_EMPLOYEE_USER: "{{ .Values.cnpg.main.user }}"
             BAD_EMPLOYEE_PASS:
               secretKeyRef:
                 name: '{{ .Release.Name }}-cnpg-app'
