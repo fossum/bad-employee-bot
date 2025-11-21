@@ -15,7 +15,12 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers-extra/features/pipenv:2": {},
-		"ghcr.io/itsmechlark/features/postgresql:1": {}
+		"ghcr.io/itsmechlark/features/postgresql:1": {},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"version": "latest",
+			"helm": "latest",
+			"minikube": "none"
+		}
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
