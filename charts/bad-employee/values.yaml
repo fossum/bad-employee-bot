@@ -41,6 +41,7 @@ cnpg:
     enabled: true
     user: employee
     database: bad_employee
+    password: "password123!"
     cluster:
       storage:
         size: 10Gi
@@ -70,12 +71,9 @@ workload:
             GEMINI_API_KEY: ""
             BAD_EMPLOYEE_DB: "{{ .Values.cnpg.main.database }}"
             BAD_EMPLOYEE_USER: "{{ .Values.cnpg.main.user }}"
-            BAD_EMPLOYEE_PASS:
-              secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-app'
-                key: password
+            BAD_EMPLOYEE_PASS: "{{ .Values.cnpg.main.password }}"
             BAD_EMPLOYEE_HOST:
               secretKeyRef:
-                name: '{{ .Release.Name }}-cnpg-app'
+                name: cnpg-main-urls
                 key: host
             BAD_EMPLOYEE_PORT: "5432"
