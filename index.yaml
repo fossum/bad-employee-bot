@@ -3,6 +3,25 @@ entries:
   bad-employee-bot:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-11-21T23:46:55.801113688Z"
+    dependencies:
+    - name: common
+      repository: oci://tccr.io/truecharts
+      version: 28.26.3
+    description: A Helm chart for the Bad Employee Discord Bot.
+    digest: 7eb90a5c36c95017c395d20daeeb07d692e9ed890f7290607ca8b723e82d15a9
+    home: https://github.com/fossum/bad-employee-bot
+    maintainers:
+    - email: fossum@duck.com
+      name: Eric Fossum
+      url: https://github.com/fossum
+    name: bad-employee-bot
+    type: application
+    urls:
+    - https://github.com/fossum/bad-employee-bot/releases/download/bad-employee-bot-0.1.9/bad-employee-bot-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-11-21T06:06:16.007436603Z"
     dependencies:
     - name: common
@@ -88,4 +107,4 @@ entries:
     urls:
     - https://github.com/fossum/bad-employee-bot/releases/download/bad-employee-bot-0.1.1/bad-employee-bot-0.1.1.tgz
     version: 0.1.1
-generated: "2025-11-21T06:06:16.007454897Z"
+generated: "2025-11-21T23:46:55.801148543Z"
