@@ -18,23 +18,23 @@ resources:
     cpu: 1000m
     memory: 500Mi
 
-rbac:
-  main:
-    enabled: true
-    primary: true
-    clusterWide: true
-    rules:
-      - apiGroups: [""]
-        resources: ["configmaps", "secrets"]
-        verbs: ["get", "watch", "list"]
+# rbac:
+#   main:
+#     enabled: true
+#     primary: true
+#     clusterWide: true
+#     rules:
+#       - apiGroups: [""]
+#         resources: ["configmaps", "secrets"]
+#         verbs: ["get", "watch", "list"]
 
-serviceAccount:
-  main:
-    enabled: true
-    primary: true
+# serviceAccount:
+#   main:
+#     enabled: true
+#     primary: true
 
-podOptions:
-  automountServiceAccountToken: true
+# podOptions:
+#   automountServiceAccountToken: true
 
 cnpg:
   main:
