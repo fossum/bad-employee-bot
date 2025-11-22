@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 
 import discord
 from discord.ext import commands
@@ -39,7 +40,11 @@ TRIGGER_WORDS = [
     ]
 ]
 
-ai_client = GeminiClient(api_key=os.getenv('GEMINI_API_KEY'))
+gemini_key = os.getenv('GEMINI_API_KEY')
+if not gemini_key:
+    print("\033[91mERROR: GEMINI_API_KEY environment variable not set.\033[0m", file=sys.stderr)
+    exit(5)
+ai_client = GeminiClient(api_key=gemini_key)
 
 intents = discord.Intents.default()
 intents.message_content = True
