@@ -59,10 +59,20 @@ class GeminiClient:
         current_content = getattr(message, 'clean_content', None) or str(message)
 
         if previous_msgs:
-            author_name = getattr(message.author, 'global_name', getattr(message.author, 'name', 'unknown')) if hasattr(message, 'author') else 'unknown'
+            # Prefer a stable mention token (`<@id>`) and also include a
+            # human-readable display name (global_name or username) so the
+            # prompt contains both the canonical Discord mention and a readable
+            # label for the model.
+            if hasattr(message, 'author') and getattr(message.author, 'id', None):
+                author_display = getattr(message.author, 'global_name', getattr(message.author, 'name', 'unknown'))
+                author_mention = f"<@{message.author.id}>"
+            else:
+                author_display = 'unknown'
+                author_mention = 'unknown'
+
             prompt += f"""
 
-            This user is named <@{author_name}>
+            This user is named {author_display} (Discord mention: {author_mention})
 
             Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
             *
