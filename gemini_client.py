@@ -62,7 +62,7 @@ class GeminiClient:
             author_name = getattr(message.author, 'global_name', getattr(message.author, 'name', 'unknown')) if hasattr(message, 'author') else 'unknown'
             prompt += f"""
 
-            This user is named @{author_name}
+            This user is named <@{author_name}>
 
             Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
             *

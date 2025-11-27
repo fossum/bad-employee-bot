@@ -94,6 +94,41 @@ async def on_ready():
     # You can set the bot's presence (status) here
     await bot.change_presence(activity=discord.Game(name=f"Type {COMMAND_PREFIX}help"))
 
+
+def contains_trigger_words(message_content: str) -> list:
+    """Return a list of trigger words found in the given message content.
+
+    Matching is case-insensitive and returns the list of matched trigger words
+    (lowercased values from `TRIGGER_WORDS`).
+    """
+    if not message_content:
+        return []
+    lowered = message_content.lower()
+    return [word for word in TRIGGER_WORDS if word in lowered]
+
+
+def is_bot_mentioned(message: discord.Message, bot_user: discord.User) -> bool:
+    """Return True if `bot_user` is mentioned in `message`.
+
+    Checks both the parsed `message.mentions` and raw mention tokens
+    (`<@id>` and `<@!id>`) in the message content.
+    """
+    mentioned = False
+    try:
+        if bot_user in message.mentions:
+            return True
+    except Exception:
+        # Defensive: if message.mentions isn't available, continue to token check
+        pass
+
+    # raw mention strings look like '<@123456789>' or '<@!123456789>'
+    mention_token = f"<@{bot_user.id}>"
+    mention_token_alt = f"<@!{bot_user.id}>"
+    if message.content and (mention_token in message.content or mention_token_alt in message.content):
+        mentioned = True
+
+    return mentioned
+
 # If you define your own on_message, you MUST include bot.process_commands(message)
 # for your commands to continue working.
 @bot.event
@@ -114,8 +149,27 @@ async def on_message(message):
 
         # Determine if the message is worthy of a response.
         matched = [word for word in TRIGGER_WORDS if word in message.content.lower()]
-        if matched:
-            logging.info(f"Trigger words found: {matched}. Invoking AI client.")
+
+        # Also respond when the bot is mentioned. Handle both the parsed
+        # `message.mentions` list (discord.Member/discord.User objects) and the
+        # raw mention tokens that can appear in `message.content`.
+        mentioned = False
+        try:
+            if bot.user in message.mentions:
+                mentioned = True
+        except Exception:
+            # Defensive: if message.mentions isn't available for some reason,
+            # fall back to searching for mention tokens in the content.
+            mentioned = False
+
+        # raw mention strings look like '<@123456789>' or '<@!123456789>'
+        mention_token = f"<@{bot.user.id}>"
+        mention_token_alt = f"<@!{bot.user.id}>"
+        if mention_token in message.content or mention_token_alt in message.content:
+            mentioned = True
+
+        if matched or mentioned:
+            logging.info(f"Trigger words found: {matched}. Bot mentioned: {mentioned}. Invoking AI client.")
 
             # Call the AI client without broad exception handling; the client
             # itself returns a user-facing message on failures. Keep try/except
