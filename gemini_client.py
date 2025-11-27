@@ -1,5 +1,7 @@
 
 import os
+import asyncio
+import logging
 from typing import Sequence
 
 import discord
@@ -34,9 +36,12 @@ class GeminiClient:
             raise ValueError("API key for Gemini not provided or found.")
         genai.configure(api_key=api_key)
         # Initialize the GenerativeModel. You can choose a specific model.
-        # For text generation, 'gemini-1.5-flash' is a good versatile choice.
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        # For text generation, 'gemini-2.5-flash' is a good versatile choice.
+        # Can be overridden via GEMINI_MODEL environment variable.
+        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+        self.model = genai.GenerativeModel(model_name)
         self.chat = None # For conversational history
+        self._logger = logging.getLogger(__name__)
 
     async def generate_response(self, message: discord.Message, previous_msgs: Sequence[discord.Message] = None) -> str:
         """Generates a response from the Gemini model based on the prompt.
@@ -48,33 +53,55 @@ class GeminiClient:
             str: The generated text response from Gemini, or an error message.
         """
         prompt = GeminiClient.PROMPT_BASIS
+
+        # Resolve current message content whether we received a discord.Message
+        # or a plain string.
+        current_content = getattr(message, 'clean_content', None) or str(message)
+
         if previous_msgs:
+            author_name = getattr(message.author, 'global_name', getattr(message.author, 'name', 'unknown')) if hasattr(message, 'author') else 'unknown'
             prompt += f"""
 
-            This user is named @{message.author.global_name}
+            This user is named @{author_name}
 
             Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
             *
             """
-            prompt += "\n * ".join([f"{message.created_at.timestamp()},{message.channel.name},{message.clean_content}" for message in previous_msgs])
+            # Use a different variable name in comprehension to avoid shadowing.
+            prompt += "\n * ".join([f"{m.created_at.timestamp()},{m.channel.name},{m.clean_content}" for m in previous_msgs])
+
         prompt += f"""
 
         User's current message:
-        {message}
+        {current_content}
         """
 
+        # Debug: log a truncated preview of the prompt to help troubleshooting.
+        self._logger.debug(f"Gemini prompt preview: {prompt[:400].replace('\n','\\n')}... (len={len(prompt)})")
+
         try:
-            # For a simple, non-chat generation:
-            response = await self.model.generate_content_async(prompt)
-            # Ensure you access the text part correctly.
-            # The structure might vary slightly based on the response type.
-            # It's good to inspect response.parts if response.text is not available.
-            if response.parts:
-                 return response.parts[0].text
-            elif response.text: # Fallback if .text attribute exists directly
-                 return response.text
-            else:
-                 return "Sorry, I couldn't get a valid response from Gemini. The response structure might have changed."
+            # For a simple, non-chat generation. Protect with a timeout so the
+            # bot doesn't hang indefinitely if the API is slow or unreachable.
+            try:
+                response = await asyncio.wait_for(self.model.generate_content_async(prompt), timeout=15)
+            except asyncio.TimeoutError:
+                self._logger.error("Timed out waiting for Gemini response.")
+                return "Sorry, the AI service is taking too long to respond. Try again later."
+
+            # Inspect common response shapes and return sensible text.
+            # Prefer `parts`, then `candidates`, then `text`.
+            if hasattr(response, 'parts') and response.parts:
+                return getattr(response.parts[0], 'text', str(response.parts[0]))
+            if hasattr(response, 'candidates') and response.candidates:
+                # Some SDK versions use `candidates` with `.content`.
+                candidate = response.candidates[0]
+                return getattr(candidate, 'content', str(candidate))
+            if hasattr(response, 'text') and response.text:
+                return response.text
+
+            # Fallback: stringify response for debugging.
+            self._logger.warning(f"Unexpected Gemini response shape: {response}")
+            return "Sorry, I couldn't get a valid response from Gemini."
         except Exception as e:
             print(f"Error generating response from Gemini: {e}")
             return f"Sorry, I encountered an error while trying to talk to Gemini: {e}"

@@ -2,7 +2,7 @@
 import asyncio
 import os
 import pytest
-import sys
+import pytest_asyncio
 
 from gemini_client import GeminiClient
 
@@ -14,7 +14,7 @@ def event_loop():
     yield loop
     loop.close()
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def gemini_client_ft():
     """Fixture to provide an initialized GeminiClient for functional tests.
 

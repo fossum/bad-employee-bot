@@ -107,16 +107,30 @@ async def on_message(message):
         return
 
     # Log messages to console.
-    logging.info(f"{message.guild.name}:{message.channel.name}:{message.author.global_name}:Msg: {message.clean_content}")
+    author_display = message.author.global_name or message.author.name or str(message.author.id)
+    logging.info(f"{message.guild.name}:{message.channel.name}:{author_display}:Msg: {message.clean_content}")
     with ChatHelper(db_connection_params) as chat_helper:
         chat_helper.save_chat_message(message)
 
         # Determine if the message is worthy of a response.
-        if any(word in message.content.lower() for word in TRIGGER_WORDS):
+        matched = [word for word in TRIGGER_WORDS if word in message.content.lower()]
+        if matched:
+            logging.info(f"Trigger words found: {matched}. Invoking AI client.")
+
+            # Call the AI client without broad exception handling; the client
+            # itself returns a user-facing message on failures. Keep try/except
+            # minimal and specific when sending the message to Discord.
             ai_response = await ai_client.generate_response(
                 message, chat_helper.messages_from_user(message.author)
             )
-            await message.channel.send(ai_response)
+            logging.info(f"AI response length: {len(ai_response) if ai_response else 0}")
+            if not ai_response:
+                logging.warning("AI client returned an empty response.")
+            else:
+                try:
+                    await message.channel.send(ai_response)
+                except (discord.HTTPException, discord.Forbidden, discord.NotFound) as send_err:
+                    logging.error(f"Failed to send message to channel {message.channel}: {send_err}")
 
     # This line allows the bot to process commands.
     await bot.process_commands(message)
