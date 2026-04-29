@@ -9,8 +9,6 @@ dependencies:
   - name: common
     version: 28.26.3
     repository: oci://oci.trueforge.org/tccr
-    condition: ""
-    alias: ""
 maintainers:
   - name: Eric Fossum
     email: fossum@duck.com
