@@ -72,7 +72,7 @@ class GeminiClient:
 
             prompt += f"""
 
-            This user is named {author_display} (Discord mention: {author_mention})
+            This user is named {author_display} (and should be referred to as {author_mention} with no other formatting).
 
             Previous messages from this user, starting with the UTC epoch they sent it, the channel sent and the message:
             *
