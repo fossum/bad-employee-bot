@@ -110,24 +110,30 @@ def contains_trigger_words(message_content: str) -> list:
 def is_bot_mentioned(message: discord.Message, bot_user: discord.User) -> bool:
     """Return True if `bot_user` is mentioned in `message`.
 
-    Checks both the parsed `message.mentions` and raw mention tokens
-    (`<@id>` and `<@!id>`) in the message content.
+    Checks the parsed `message.mentions`, role mentions assigned to the bot,
+    and raw mention tokens (`<@id>` and `<@!id>`) in the message content.
     """
-    mentioned = False
     try:
         if bot_user in message.mentions:
             return True
     except Exception:
-        # Defensive: if message.mentions isn't available, continue to token check
         pass
+
+    # Check if the bot is mentioned via a role assigned to it
+    if message.guild and message.guild.me:
+        try:
+            if any(role in message.role_mentions for role in message.guild.me.roles):
+                return True
+        except Exception:
+            pass
 
     # raw mention strings look like '<@123456789>' or '<@!123456789>'
     mention_token = f"<@{bot_user.id}>"
     mention_token_alt = f"<@!{bot_user.id}>"
     if message.content and (mention_token in message.content or mention_token_alt in message.content):
-        mentioned = True
+        return True
 
-    return mentioned
+    return False
 
 # If you define your own on_message, you MUST include bot.process_commands(message)
 # for your commands to continue working.
@@ -150,23 +156,8 @@ async def on_message(message):
         # Determine if the message is worthy of a response.
         matched = [word for word in TRIGGER_WORDS if word in message.content.lower()]
 
-        # Also respond when the bot is mentioned. Handle both the parsed
-        # `message.mentions` list (discord.Member/discord.User objects) and the
-        # raw mention tokens that can appear in `message.content`.
-        mentioned = False
-        try:
-            if bot.user in message.mentions:
-                mentioned = True
-        except Exception:
-            # Defensive: if message.mentions isn't available for some reason,
-            # fall back to searching for mention tokens in the content.
-            mentioned = False
-
-        # raw mention strings look like '<@123456789>' or '<@!123456789>'
-        mention_token = f"<@{bot.user.id}>"
-        mention_token_alt = f"<@!{bot.user.id}>"
-        if mention_token in message.content or mention_token_alt in message.content:
-            mentioned = True
+        # Also respond when the bot is mentioned (directly or via roles).
+        mentioned = is_bot_mentioned(message, bot.user)
 
         if matched or mentioned:
             logging.info(f"Trigger words found: {matched}. Bot mentioned: {mentioned}. Invoking AI client.")
